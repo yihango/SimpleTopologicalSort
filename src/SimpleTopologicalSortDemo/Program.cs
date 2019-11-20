@@ -22,7 +22,7 @@ namespace SimpleTopologicalSortDemo
             var moduleDescriptors = moduleManager.ModuleSort<AModule>();
             foreach (var item in moduleDescriptors)
             {
-                services.AddSingleton(item.ModuleType);
+                services.AddSingleton(item.ModuleType, item.Instance);
             }
 
             var aModule = GetSingletonInstanceOrNull<AModule>(services);
@@ -56,27 +56,5 @@ namespace SimpleTopologicalSortDemo
     //    }
 
 
-    public class ModuleDescriptor
-    {
-        /// <summary>
-        /// 模块类型
-        /// </summary>
-        public Type ModuleType { get; private set; }
 
-        /// <summary>
-        /// 依赖项
-        /// </summary>
-        public ModuleDescriptor[] Dependencies { get; private set; }
-
-        public ModuleDescriptor(Type moduleType, params ModuleDescriptor[] dependencies)
-        {
-            ModuleType = moduleType;
-            Dependencies = dependencies ?? new ModuleDescriptor[0];
-        }
-
-        public override string ToString()
-        {
-            return ModuleType.Name;
-        }
-    }
 }
