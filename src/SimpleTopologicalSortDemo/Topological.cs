@@ -1,20 +1,23 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace SimpleTopologicalSortDemo
 {
-    public class Topological
+    /// <summary>
+    /// 拓扑排序工具类
+    /// </summary>
+    public static class Topological
     {
 
 
 
         /// <summary>
-        /// 拓扑排序
+        /// 进行拓扑排序
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="source"></param>
-        /// <param name="getDependencies"></param>
+        /// <typeparam name="T">类型</typeparam>
+        /// <param name="source">元数据</param>
+        /// <param name="getDependencies">依赖获取函数</param>
         /// <returns></returns>
         public static IList<T> Sort<T>(IEnumerable<T> source, Func<T, IEnumerable<T>> getDependencies)
         {
@@ -37,7 +40,7 @@ namespace SimpleTopologicalSortDemo
         /// <param name="getDependencies"></param>
         /// <param name="sorted"></param>
         /// <param name="visited"></param>
-        protected static void Visit<T>(T item, Func<T, IEnumerable<T>> getDependencies, List<T> sorted, Dictionary<T, bool> visited)
+        static void Visit<T>(T item, Func<T, IEnumerable<T>> getDependencies, List<T> sorted, Dictionary<T, bool> visited)
         {
             bool inProcess;
             var alreadyVisited = visited.TryGetValue(item, out inProcess);
