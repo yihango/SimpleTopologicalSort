@@ -25,7 +25,11 @@ namespace SimpleTopologicalSortDemo
                 services.AddSingleton(item.ModuleType, item.Instance);
             }
 
-            var aModule = GetSingletonInstanceOrNull<AModule>(services);
+            foreach (var item in moduleDescriptors)
+            {
+                var aModule = GetSingletonInstanceOrNull(services, item.ModuleType);
+            }
+
 
             serviceProvider = services.BuildServiceProvider();
 
@@ -37,6 +41,13 @@ namespace SimpleTopologicalSortDemo
         {
             return (T)services
                 .FirstOrDefault(d => d.ServiceType == typeof(T))
+                ?.ImplementationInstance;
+        }
+
+        public static object GetSingletonInstanceOrNull(IServiceCollection services, Type type)
+        {
+            return services
+                .FirstOrDefault(d => d.ServiceType == type)
                 ?.ImplementationInstance;
         }
 
