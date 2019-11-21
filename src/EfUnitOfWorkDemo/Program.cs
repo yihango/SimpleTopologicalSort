@@ -13,20 +13,17 @@ namespace EfUnitOfWorkDemo
     {
         public static void Main(string[] args)
         {
-            var aa = typeof(Program).Assembly.Location;
-
-            var configurationBuilder = new ConfigurationBuilder()
-                    .SetBasePath(typeof(Program).Assembly.Location)
-          .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-
             CreateHostBuilder(args).Build().Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+        public static IHostBuilder CreateHostBuilder(string[] args)
+        {
+            return Host.CreateDefaultBuilder(args)
+              .ConfigureWebHostDefaults(webBuilder =>
+              {
+                  webBuilder.UseStartup<Startup>();
+              });
+        }
+
     }
 }
