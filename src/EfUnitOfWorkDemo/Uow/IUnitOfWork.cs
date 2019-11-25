@@ -9,43 +9,33 @@ namespace EfUnitOfWorkDemo.Uow
 {
     public interface IUnitOfWork
     {
-        Guid Id { get; }
+        /// <summary>
+        /// Unique id of this UOW.
+        /// </summary>
+        string Id { get; }
 
-        //TODO: Switch to OnFailed (sync) and OnDisposed (sync) methods to be compatible with OnCompleted
-        event EventHandler<UnitOfWorkFailedEventArgs> Failed;
-
-        event EventHandler<UnitOfWorkEventArgs> Disposed;
-
-        IUnitOfWorkOptions Options { get; }
-
+        /// <summary>
+        /// Reference to the outer UOW if exists.
+        /// </summary>
         IUnitOfWork Outer { get; }
 
-        bool IsReserved { get; }
+        /// <summary>
+        /// Begins the unit of work with given options.
+        /// </summary>
+        /// <param name="options">Unit of work options</param>
+        void Begin(UnitOfWorkOptions options);
 
-        bool IsDisposed { get; }
 
-        bool IsCompleted { get; }
-
-        string ReservationName { get; }
-
-        void SetOuter([CanBeNull] IUnitOfWork outer);
-
-        void Initialize([NotNull] UnitOfWorkOptions options);
-
-        void Reserve([NotNull] string reservationName);
-
-        void SaveChanges();
-
-        Task SaveChangesAsync(CancellationToken cancellationToken = default);
-
+        /// <summary>
+        /// Completes this unit of work.
+        /// It saves all changes and commit transaction if exists.
+        /// </summary>
         void Complete();
 
-        Task CompleteAsync(CancellationToken cancellationToken = default);
-
-        void Rollback();
-
-        Task RollbackAsync(CancellationToken cancellationToken = default);
-
-        void OnCompleted(Func<Task> handler);
+        /// <summary>
+        /// Completes this unit of work.
+        /// It saves all changes and commit transaction if exists.
+        /// </summary>
+        Task CompleteAsync();
     }
 }
