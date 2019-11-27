@@ -21,11 +21,14 @@ namespace EfUnitOfWorkDemo.Uow
         private readonly IDbContextResolver _dbContextResolver;
         private readonly IEfCoreTransactionStrategy _transactionStrategy;
 
+        private readonly IDbContextTypeMatcher _dbContextTypeMatcher;
+
         /// <summary>
         /// Creates a new <see cref="EfCoreUnitOfWork"/>.
         /// </summary>
         public EfCoreUnitOfWork(
             IServiceProvider iocResolver,
+            IDbContextTypeMatcher dbContextTypeMatcher,
             IDbContextResolver dbContextResolver,
             IUnitOfWorkDefaultOptions defaultOptions,
             IEfCoreTransactionStrategy transactionStrategy)
@@ -34,6 +37,7 @@ namespace EfUnitOfWorkDemo.Uow
                   )
         {
             IocResolver = iocResolver;
+            _dbContextTypeMatcher = dbContextTypeMatcher;
             _dbContextResolver = dbContextResolver;
             _transactionStrategy = transactionStrategy;
 
