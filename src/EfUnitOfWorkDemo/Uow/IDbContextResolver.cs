@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace EfUnitOfWorkDemo.Uow
 {
@@ -17,21 +18,17 @@ namespace EfUnitOfWorkDemo.Uow
 
     public class DbContextResolver : IDbContextResolver
     {
-        protected readonly IServiceProvider _serviceProvider;
+        protected readonly IDbContextFactory _dbContextFactory;
 
-        public DbContextResolver(IServiceProvider serviceProvider)
+        public DbContextResolver(IDbContextFactory dbContextFactory)
         {
-            _serviceProvider = serviceProvider;
+            _dbContextFactory = dbContextFactory;
         }
 
         public virtual TDbContext Resolve<TDbContext>(string connectionString, DbConnection existingConnection)
             where TDbContext : DbContext
         {
-            var dbContextType = typeof(TDbContext);
-
-            var dbContext = _serviceProvider.GetService<TDbContext>();
-
-            return dbContext;
+            return this._dbContextFactory.Create<TDbContext>(connectionString, existingConnection);
         }
     }
 }

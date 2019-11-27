@@ -7,9 +7,9 @@ namespace EfUnitOfWorkDemo.Uow
 {
     public abstract class UnitOfWorkBase : IUnitOfWork
     {
-        public string Id { get; protected set; }
+        public string Id { get; }
 
-        public IUnitOfWork Outer { get; protected set; }
+        public IUnitOfWork Outer { get; set; }
 
         /// <inheritdoc/>
         public event EventHandler Completed;
@@ -23,20 +23,19 @@ namespace EfUnitOfWorkDemo.Uow
         /// <inheritdoc/>
         public UnitOfWorkOptions Options { get; private set; }
 
+
+        public Dictionary<string, object> Items { get; set; }
+
         /// <summary>
         /// Gets default UOW options.
         /// </summary>
         protected IUnitOfWorkDefaultOptions DefaultOptions { get; }
 
 
-        public Dictionary<string, object> Items { get; set; }
-
-
         /// <summary>
         /// Gets a value indicates that this unit of work is disposed or not.
         /// </summary>
         public bool IsDisposed { get; private set; }
-
 
         /// <summary>
         /// Is <see cref="Begin"/> method called before?
@@ -58,12 +57,14 @@ namespace EfUnitOfWorkDemo.Uow
         /// </summary>
         private Exception _exception;
 
+        private int? _tenantId;
 
-
+        /// <summary>
+        /// Constructor.
+        /// </summary>
         protected UnitOfWorkBase(
-       IUnitOfWorkDefaultOptions defaultOptions)
+            IUnitOfWorkDefaultOptions defaultOptions)
         {
-
             DefaultOptions = defaultOptions;
             Id = Guid.NewGuid().ToString("N");
             Items = new Dictionary<string, object>();
@@ -76,8 +77,16 @@ namespace EfUnitOfWorkDemo.Uow
             PreventMultipleBegin();
             Options = options; //TODO: Do not set options like that, instead make a copy?
 
+
+
             BeginUow();
         }
+
+        /// <inheritdoc/>
+        public abstract void SaveChanges();
+
+        /// <inheritdoc/>
+        public abstract Task SaveChangesAsync();
 
 
         /// <inheritdoc/>
@@ -134,55 +143,6 @@ namespace EfUnitOfWorkDemo.Uow
         }
 
         /// <summary>
-        /// Called to trigger <see cref="Completed"/> event.
-        /// </summary>
-        protected virtual void OnCompleted()
-        {
-            Completed?.Invoke(this, EventArgs.Empty);
-            //Completed.InvokeSafely(this);
-        }
-
-        /// <summary>
-        /// Called to trigger <see cref="Failed"/> event.
-        /// </summary>
-        /// <param name="exception">Exception that cause failure</param>
-        protected virtual void OnFailed(Exception exception)
-        {
-            Failed?.Invoke(this, new UnitOfWorkFailedEventArgs(exception));
-            //Failed?.InvokeSafely(this,  new UnitOfWorkFailedEventArgs(exception));
-        }
-
-        /// <summary>
-        /// Called to trigger <see cref="Disposed"/> event.
-        /// </summary>
-        protected virtual void OnDisposed()
-        {
-            Disposed?.Invoke(this, EventArgs.Empty);
-            //Disposed?.InvokeSafely(this);
-        }
-
-        private void PreventMultipleBegin()
-        {
-            if (_isBeginCalledBefore)
-            {
-                throw new Exception("This unit of work has started before. Can not call Start method more than once.");
-            }
-
-            _isBeginCalledBefore = true;
-        }
-
-        private void PreventMultipleComplete()
-        {
-            if (_isCompleteCalledBefore)
-            {
-                throw new Exception("Complete is called before!");
-            }
-
-            _isCompleteCalledBefore = true;
-        }
-
-
-        /// <summary>
         /// Can be implemented by derived classes to start UOW.
         /// </summary>
         protected virtual void BeginUow()
@@ -206,11 +166,55 @@ namespace EfUnitOfWorkDemo.Uow
         protected abstract void DisposeUow();
 
 
+
+        /// <summary>
+        /// Called to trigger <see cref="Completed"/> event.
+        /// </summary>
+        protected virtual void OnCompleted()
+        {
+            Completed.InvokeSafely(this);
+        }
+
+        /// <summary>
+        /// Called to trigger <see cref="Failed"/> event.
+        /// </summary>
+        /// <param name="exception">Exception that cause failure</param>
+        protected virtual void OnFailed(Exception exception)
+        {
+            Failed.InvokeSafely(this, new UnitOfWorkFailedEventArgs(exception));
+        }
+
+        /// <summary>
+        /// Called to trigger <see cref="Disposed"/> event.
+        /// </summary>
+        protected virtual void OnDisposed()
+        {
+            Disposed.InvokeSafely(this);
+        }
+
+        private void PreventMultipleBegin()
+        {
+            if (_isBeginCalledBefore)
+            {
+                throw new Exception("This unit of work has started before. Can not call Start method more than once.");
+            }
+
+            _isBeginCalledBefore = true;
+        }
+
+        private void PreventMultipleComplete()
+        {
+            if (_isCompleteCalledBefore)
+            {
+                throw new Exception("Complete is called before!");
+            }
+
+            _isCompleteCalledBefore = true;
+        }
+
         public override string ToString()
         {
             return $"[UnitOfWork {Id}]";
         }
-
-
     }
 }

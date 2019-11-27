@@ -3,50 +3,99 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace EfUnitOfWorkDemo.Uow
 {
     public interface IUnitOfWorkManager
     {
+        /// <summary>
+        /// Gets currently active unit of work (or null if not exists).
+        /// </summary>
+        IActiveUnitOfWork Current { get; }
 
+        /// <summary>
+        /// Begins a new unit of work.
+        /// </summary>
+        /// <returns>A handle to be able to complete the unit of work</returns>
+        IUnitOfWorkCompleteHandle Begin();
+
+        /// <summary>
+        /// Begins a new unit of work.
+        /// </summary>
+        /// <returns>A handle to be able to complete the unit of work</returns>
+        IUnitOfWorkCompleteHandle Begin(TransactionScopeOption scope);
+
+        /// <summary>
+        /// Begins a new unit of work.
+        /// </summary>
+        /// <returns>A handle to be able to complete the unit of work</returns>
+        IUnitOfWorkCompleteHandle Begin(UnitOfWorkOptions options);
     }
 
     public class UnitOfWorkManager : IUnitOfWorkManager
     {
-        public IUnitOfWork Current => GetCurrentUnitOfWork();
+        private readonly IServiceProvider _iocResolver;
+        private readonly ICurrentUnitOfWorkProvider _currentUnitOfWorkProvider;
+        private readonly IUnitOfWorkDefaultOptions _defaultOptions;
 
-        protected readonly IAmbientUnitOfWork _ambientUnitOfWork;
-        protected readonly IServiceScopeFactory _serviceScopeFactory;
-
-        public UnitOfWorkManager(IAmbientUnitOfWork ambientUnitOfWork, IServiceScopeFactory serviceScopeFactory)
+        public IActiveUnitOfWork Current
         {
-            _ambientUnitOfWork = ambientUnitOfWork;
-            _serviceScopeFactory = serviceScopeFactory;
+            get { return _currentUnitOfWorkProvider.Current; }
         }
 
-        public IUnitOfWork Begin(UnitOfWorkOptions options, bool requiresNew = false)
+        public UnitOfWorkManager(
+            IServiceProvider iocResolver,
+            ICurrentUnitOfWorkProvider currentUnitOfWorkProvider,
+            IUnitOfWorkDefaultOptions defaultOptions)
         {
-            var currentUow = Current;
-            if (currentUow != null && !requiresNew)
-            {
-                return new ChildUnitOfWork(currentUow);
-            }
-
-            var unitOfWork = CreateNewUnitOfWork();
-            unitOfWork.Initialize(options);
-
-            return unitOfWork;
+            _iocResolver = iocResolver;
+            _currentUnitOfWorkProvider = currentUnitOfWorkProvider;
+            _defaultOptions = defaultOptions;
         }
 
-        private IUnitOfWork GetCurrentUnitOfWork()
+        public IUnitOfWorkCompleteHandle Begin()
         {
-            var uow = _ambientUnitOfWork.UnitOfWork;
+            return Begin(new UnitOfWorkOptions());
+        }
 
-            //Skip reserved unit of work
-            while (uow != null && (uow.IsReserved || uow.IsDisposed || uow.IsCompleted))
+        public IUnitOfWorkCompleteHandle Begin(TransactionScopeOption scope)
+        {
+            return Begin(new UnitOfWorkOptions { Scope = scope });
+        }
+
+        public IUnitOfWorkCompleteHandle Begin(UnitOfWorkOptions options)
+        {
+
+            var outerUow = _currentUnitOfWorkProvider.Current;
+
+            if (options.Scope == TransactionScopeOption.Required && outerUow != null)
             {
-                uow = uow.Outer;
+                return new InnerUnitOfWorkCompleteHandle();
             }
+
+            var uow = _iocResolver.GetService<IUnitOfWork>();
+
+            uow.Completed += (sender, args) =>
+            {
+                _currentUnitOfWorkProvider.Current = null;
+            };
+
+            uow.Failed += (sender, args) =>
+            {
+                _currentUnitOfWorkProvider.Current = null;
+            };
+
+            uow.Disposed += (sender, args) =>
+            {
+                uow.Dispose();
+            };
+
+
+            uow.Begin(options);
+
+
+            _currentUnitOfWorkProvider.Current = uow;
 
             return uow;
         }

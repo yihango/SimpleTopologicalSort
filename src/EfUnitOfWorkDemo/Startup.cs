@@ -12,6 +12,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using EfUnitOfWorkDemo.Database;
+using EfUnitOfWorkDemo.Uow;
+using EfUnitOfWorkDemo.Filters;
 
 namespace EfUnitOfWorkDemo
 {
@@ -27,12 +29,25 @@ namespace EfUnitOfWorkDemo
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers(o =>
+            {
+                o.Filters.Add(typeof(UowFilter));
+            });
 
             services.AddDbContext<AppDbContext>((options) =>
             {
                 options.UseSqlServer(Configuration["ConnectionStrings:Default"]);
             });
+
+
+            services.AddTransient<IUnitOfWorkManager, UnitOfWorkManager>();
+            services.AddTransient<IDbContextTypeMatcher, DbContextTypeMatcher>();
+            services.AddTransient<IUnitOfWorkDefaultOptions, UnitOfWorkDefaultOptions>();
+            services.AddSingleton(typeof(IDbContextFactory), new DbContextFactory());
+            services.AddTransient<IDbContextResolver, DbContextResolver>();
+            services.AddTransient<IEfCoreTransactionStrategy, EfCoreTransactionStrategy>();
+            services.AddTransient<IUnitOfWork, EfCoreUnitOfWork>();
+            services.AddTransient<ICurrentUnitOfWorkProvider, AsyncLocalCurrentUnitOfWorkProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

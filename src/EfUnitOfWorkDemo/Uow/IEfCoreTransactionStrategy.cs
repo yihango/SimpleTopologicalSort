@@ -2,13 +2,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Data;
+using System.Transactions;
 
 namespace EfUnitOfWorkDemo.Uow
 {
-    public interface IEfCoreTransactionStrategy
+    public interface IEfCoreTransactionStrategy : IDisposable
     {
         void InitOptions(UnitOfWorkOptions options);
 
@@ -17,7 +15,6 @@ namespace EfUnitOfWorkDemo.Uow
 
         void Commit();
 
-        void Dispose();
     }
 
     public class EfCoreTransactionStrategy : IEfCoreTransactionStrategy
@@ -49,7 +46,9 @@ namespace EfUnitOfWorkDemo.Uow
             {
                 dbContext = dbContextResolver.Resolve<TDbContext>(connectionString, null);
 
-                var dbtransaction = dbContext.Database.BeginTransaction((Options.IsolationLevel ?? IsolationLevel.ReadUncommitted).ToSystemDataIsolationLevel());
+                var isolationLevel = (Options.IsolationLevel ?? IsolationLevel.ReadUncommitted).ToSystemDataIsolationLevel();
+
+                var dbtransaction = dbContext.Database.BeginTransaction(isolationLevel);
                 activeTransaction = new ActiveTransactionInfo(dbtransaction, dbContext);
                 ActiveTransactions[connectionString] = activeTransaction;
             }
@@ -77,13 +76,41 @@ namespace EfUnitOfWorkDemo.Uow
 
         public void Commit()
         {
-            throw new NotImplementedException();
+            foreach (var activeTransaction in ActiveTransactions.Values)
+            {
+                activeTransaction.DbContextTransaction.Commit();
+
+                foreach (var dbContext in activeTransaction.AttendedDbContexts)
+                {
+                    if (dbContext.HasRelationalTransactionManager())
+                    {
+                        continue; //Relational databases use the shared transaction
+                    }
+
+                    dbContext.Database.CommitTransaction();
+                }
+            }
         }
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            foreach (var activeTransaction in ActiveTransactions.Values)
+            {
+                activeTransaction.DbContextTransaction.Dispose();
+
+                foreach (var attendedDbContext in activeTransaction.AttendedDbContexts)
+                {
+                    attendedDbContext.Dispose();
+                }
+
+                activeTransaction.StarterDbContext.Dispose();
+                //iocResolver.Release(activeTransaction.StarterDbContext);
+            }
+
+            ActiveTransactions.Clear();
         }
+
+     
 
     }
 }
