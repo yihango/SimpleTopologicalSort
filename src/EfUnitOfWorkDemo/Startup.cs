@@ -14,6 +14,8 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using EfUnitOfWorkDemo.Database;
 using EfUnitOfWorkDemo.Uow;
 using EfUnitOfWorkDemo.Filters;
+using EfUnitOfWorkDemo.Repositories;
+using EfUnitOfWorkDemo.Domain.Entities;
 
 namespace EfUnitOfWorkDemo
 {
@@ -48,6 +50,16 @@ namespace EfUnitOfWorkDemo
             services.AddTransient<IEfCoreTransactionStrategy, EfCoreTransactionStrategy>();
             services.AddTransient<IUnitOfWork, EfCoreUnitOfWork>();
             services.AddTransient<ICurrentUnitOfWorkProvider, AsyncLocalCurrentUnitOfWorkProvider>();
+
+            var defaultConnectionStringResolver = new DefaultConnectionStringResolver();
+            services.AddSingleton(typeof(IConnectionStringRegister), defaultConnectionStringResolver);
+            services.AddSingleton(typeof(IConnectionStringResolver), defaultConnectionStringResolver);
+
+            services.AddSingleton<IDbContextTypeMatcher, DbContextTypeMatcher>();
+            services.AddTransient(typeof(IDbContextProvider<>), typeof(UnitOfWorkDbContextProvider<>));
+            services.AddTransient<IActiveTransactionProvider, EfCoreActiveTransactionProvider>();
+
+            //services.AddTransient(typeof(IRepository<,>, typeof(EfCoreRepositoryBase<AppDbContext, IEntity,>));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

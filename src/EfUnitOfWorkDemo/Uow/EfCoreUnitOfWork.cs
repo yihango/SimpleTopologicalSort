@@ -18,10 +18,12 @@ namespace EfUnitOfWorkDemo.Uow
         protected IDictionary<string, DbContext> ActiveDbContexts { get; }
         protected IServiceProvider IocResolver { get; }
 
-        private readonly IDbContextResolver _dbContextResolver;
-        private readonly IEfCoreTransactionStrategy _transactionStrategy;
+        protected readonly IDbContextResolver _dbContextResolver;
+        protected readonly IEfCoreTransactionStrategy _transactionStrategy;
 
-        private readonly IDbContextTypeMatcher _dbContextTypeMatcher;
+        protected readonly IDbContextTypeMatcher _dbContextTypeMatcher;
+
+        protected readonly IConnectionStringResolver _connectionStringResolver;
 
         /// <summary>
         /// Creates a new <see cref="EfCoreUnitOfWork"/>.
@@ -31,7 +33,9 @@ namespace EfUnitOfWorkDemo.Uow
             IDbContextTypeMatcher dbContextTypeMatcher,
             IDbContextResolver dbContextResolver,
             IUnitOfWorkDefaultOptions defaultOptions,
-            IEfCoreTransactionStrategy transactionStrategy)
+            IEfCoreTransactionStrategy transactionStrategy,
+            IConnectionStringResolver connectionStringResolver
+            )
             : base(
                   defaultOptions
                   )
@@ -42,6 +46,8 @@ namespace EfUnitOfWorkDemo.Uow
             _transactionStrategy = transactionStrategy;
 
             ActiveDbContexts = new Dictionary<string, DbContext>();
+
+            _connectionStringResolver = connectionStringResolver;
         }
 
         protected override void BeginUow()
@@ -133,11 +139,8 @@ namespace EfUnitOfWorkDemo.Uow
 
             var concreteDbContextType = _dbContextTypeMatcher.GetConcreteType(typeof(TDbContext));
 
-            var connectionStringResolveArgs = new ConnectionStringResolveArgs();
 
-            connectionStringResolveArgs["DbContextType"] = typeof(TDbContext);
-            connectionStringResolveArgs["DbContextConcreteType"] = concreteDbContextType;
-            var connectionString = ResolveConnectionString(connectionStringResolveArgs);
+            var connectionString = ResolveConnectionString(concreteDbContextType.FullName);
 
             var dbContextKey = concreteDbContextType.FullName + "#" + connectionString;
             if (name != null)
@@ -171,6 +174,12 @@ namespace EfUnitOfWorkDemo.Uow
             }
 
             return (TDbContext)dbContext;
+        }
+
+
+        protected virtual string ResolveConnectionString(string concreteDbContextType)
+        {
+            return _connectionStringResolver.GetNameOrConnectionString(concreteDbContextType);
         }
 
     }

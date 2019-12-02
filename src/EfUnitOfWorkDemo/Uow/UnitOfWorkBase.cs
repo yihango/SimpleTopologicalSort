@@ -31,7 +31,6 @@ namespace EfUnitOfWorkDemo.Uow
         /// </summary>
         protected IUnitOfWorkDefaultOptions DefaultOptions { get; }
 
-
         /// <summary>
         /// Gets a value indicates that this unit of work is disposed or not.
         /// </summary>
