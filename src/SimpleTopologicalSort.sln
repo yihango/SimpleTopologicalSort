@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.29509.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleTopologicalSortDemo", "SimpleTopologicalSortDemo\SimpleTopologicalSortDemo.csproj", "{FB4BD6DF-C6AE-4328-8B07-0A971322CAC9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EfUnitOfWorkDemo", "EfUnitOfWorkDemo\EfUnitOfWorkDemo.csproj", "{63ACA58B-8FA6-42E4-8A70-726AB09259D9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EfUnitOfWorkDemo", "EfUnitOfWorkDemo\EfUnitOfWorkDemo.csproj", "{63ACA58B-8FA6-42E4-8A70-726AB09259D9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyUnitOfWork", "EasyUnitOfWork\EasyUnitOfWork.csproj", "{1A41DCEA-11DA-4E5E-9C7D-45CEE75A23B7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{63ACA58B-8FA6-42E4-8A70-726AB09259D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{63ACA58B-8FA6-42E4-8A70-726AB09259D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{63ACA58B-8FA6-42E4-8A70-726AB09259D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A41DCEA-11DA-4E5E-9C7D-45CEE75A23B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A41DCEA-11DA-4E5E-9C7D-45CEE75A23B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A41DCEA-11DA-4E5E-9C7D-45CEE75A23B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A41DCEA-11DA-4E5E-9C7D-45CEE75A23B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
