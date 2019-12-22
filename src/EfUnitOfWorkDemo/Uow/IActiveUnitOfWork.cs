@@ -6,24 +6,25 @@ using System.Threading.Tasks;
 namespace EfUnitOfWorkDemo.Uow
 {
     /// <summary>
-    /// This interface is used to work with active unit of work.
-    /// This interface can not be injected.
-    /// Use <see cref="IUnitOfWorkManager"/> instead.
+    /// 当前激活的工作单元。
+    /// 必须通过
+    /// <see cref="IUnitOfWorkManager"/>
+    /// 实例化
     /// </summary>
     public interface IActiveUnitOfWork
     {
         /// <summary>
-        /// This event is raised when this UOW is successfully completed.
+        /// 成功
         /// </summary>
         event EventHandler Completed;
 
         /// <summary>
-        /// This event is raised when this UOW is failed.
+        /// 失败
         /// </summary>
         event EventHandler<UnitOfWorkFailedEventArgs> Failed;
 
         /// <summary>
-        /// This event is raised when this UOW is disposed.
+        /// 释放
         /// </summary>
         event EventHandler Disposed;
 
