@@ -1,38 +1,76 @@
-﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Transactions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+
 using EasyUnitOfWork.Uow.Handles;
+using EasyUnitOfWork.Uow.Providers;
+using EasyUnitOfWork.Extensions;
+using System;
 
 namespace EasyUnitOfWork.Uow
 {
+    /// <summary>
+    /// 默认实现的工作单元管理器
+    /// </summary>
     public class DefaultUnitOfWorkManager : IUnitOfWorkManager
     {
-
         protected readonly IServiceProvider _serviceProvider;
+        protected readonly ICurrentUnitOfWorkProvider _currentUnitOfWorkProvider;
 
-        public IActiveUnitOfWork Current => throw new NotImplementedException();
+        public IActiveUnitOfWork Current => _currentUnitOfWorkProvider.Current;
 
         public DefaultUnitOfWorkManager(
-            IServiceProvider serviceProvider
+            IServiceProvider serviceProvider,
+             ICurrentUnitOfWorkProvider currentUnitOfWorkProvider
             )
         {
             _serviceProvider = serviceProvider;
+            _currentUnitOfWorkProvider = currentUnitOfWorkProvider;
         }
 
         public IUnitOfWorkCompleteHandle Begin()
         {
-            throw new NotImplementedException();
+            return Begin(new UnitOfWorkOptions());
         }
 
         public IUnitOfWorkCompleteHandle Begin(TransactionScopeOption scope)
         {
-            throw new NotImplementedException();
+            return Begin(new UnitOfWorkOptions { Scope = scope });
         }
 
         public IUnitOfWorkCompleteHandle Begin(UnitOfWorkOptions options)
         {
-            throw new NotImplementedException();
+            var outerUow = _currentUnitOfWorkProvider.Current;
+
+            if (options.Scope == TransactionScopeOption.Required && outerUow != null)
+            {
+                return new InnerUnitOfWorkCompleteHandle();
+            }
+
+            var uow = _serviceProvider.Resolve<IUnitOfWork>();
+
+            uow.Completed += (sender, args) =>
+            {
+                _currentUnitOfWorkProvider.Current = null;
+            };
+
+            uow.Failed += (sender, args) =>
+            {
+                _currentUnitOfWorkProvider.Current = null;
+            };
+
+            uow.Disposed += (sender, args) =>
+            {
+                uow.Dispose();
+            };
+
+            uow.Begin(options);
+
+            _currentUnitOfWorkProvider.Current = uow;
+
+            return uow;
         }
     }
 }

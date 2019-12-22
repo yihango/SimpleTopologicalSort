@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,22 +14,22 @@ namespace EasyUnitOfWork.Uow
     public interface IActiveUnitOfWork
     {
         /// <summary>
-        /// 成功
+        /// 成功 事件
         /// </summary>
         event EventHandler Completed;
 
         /// <summary>
-        /// 失败
+        /// 失败 事件
         /// </summary>
         event EventHandler<Exception> Failed;
 
         /// <summary>
-        /// 释放
+        /// 释放 事件
         /// </summary>
         event EventHandler Disposed;
 
         /// <summary>
-        /// 选项
+        /// 工作单元选项
         /// </summary>
         UnitOfWorkOptions Options { get; }
 
@@ -44,12 +44,12 @@ namespace EasyUnitOfWork.Uow
         bool IsDisposed { get; }
 
         /// <summary>
-        /// 保存
+        /// 提交工作单元
         /// </summary>
         void SaveChanges();
 
         /// <summary>
-        /// 保存-异步
+        /// 提交工作单元-异步
         /// </summary>
         Task SaveChangesAsync();
     }

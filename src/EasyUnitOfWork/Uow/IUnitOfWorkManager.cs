@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Transactions;
@@ -6,29 +6,34 @@ using EasyUnitOfWork.Uow.Handles;
 
 namespace EasyUnitOfWork.Uow
 {
+    /// <summary>
+    /// 工作单元管理器
+    /// </summary>
     public interface IUnitOfWorkManager
     {
         /// <summary>
-        /// Gets currently active unit of work (or null if not exists).
+        /// 获取当前激活的工作单元,如果不存在则返回空
         /// </summary>
         IActiveUnitOfWork Current { get; }
 
         /// <summary>
-        /// Begins a new unit of work.
+        /// 启动一个新的工作单元
         /// </summary>
-        /// <returns>A handle to be able to complete the unit of work</returns>
+        /// <returns>工作单元处理器</returns>
         IUnitOfWorkCompleteHandle Begin();
 
         /// <summary>
-        /// Begins a new unit of work.
+        /// 启动一个新的工作单元
         /// </summary>
-        /// <returns>A handle to be able to complete the unit of work</returns>
+        /// <param name="scope">事务配置</param>
+        /// <returns>工作单元处理器</returns>
         IUnitOfWorkCompleteHandle Begin(TransactionScopeOption scope);
 
         /// <summary>
-        /// Begins a new unit of work.
+        /// 启动一个新的工作单元
         /// </summary>
-        /// <returns>A handle to be able to complete the unit of work</returns>
+        /// <param name="options">工作单元配置</param>
+        /// <returns>工作单元处理器</returns>
         IUnitOfWorkCompleteHandle Begin(UnitOfWorkOptions options);
     }
 }

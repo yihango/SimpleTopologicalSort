@@ -1,10 +1,13 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace EasyUnitOfWork.Uow
 {
+    /// <summary>
+    /// 工作单元基类
+    /// </summary>
     public abstract class UnitOfWorkBase : IUnitOfWork
     {
         /// <summary>
@@ -77,14 +80,14 @@ namespace EasyUnitOfWork.Uow
             Items = new Dictionary<string, object>();
         }
 
-        /// <inheritdoc/>
+
         public void Begin(UnitOfWorkOptions options)
         {
-
             PreventMultipleBegin();
-            Options = options; //TODO: Do not set options like that, instead make a copy?
 
 
+            //TODO: Do not set options like that, instead make a copy?
+            Options = options;
 
             BeginUow();
         }
@@ -145,10 +148,21 @@ namespace EasyUnitOfWork.Uow
         /// </summary>
         public void Dispose()
         {
+            // https://docs.microsoft.com/zh-cn/visualstudio/code-quality/ca1063?view=vs-2019
+            this.Dispose(true);
+        }
+
+        /// <summary>
+        /// 释放资源
+        /// </summary>
+        /// <param name="state"></param>
+        protected virtual void Dispose(bool state)
+        {
             if (!_isBeginCalledBefore || IsDisposed)
             {
                 return;
             }
+
 
             IsDisposed = true;
 
@@ -187,7 +201,7 @@ namespace EasyUnitOfWork.Uow
 
 
         /// <summary>
-        /// Called to trigger <see cref="Completed"/> event.
+        /// 触发 <see cref="Completed"/> 事件
         /// </summary>
         protected virtual void OnCompleted()
         {
@@ -195,37 +209,43 @@ namespace EasyUnitOfWork.Uow
         }
 
         /// <summary>
-        /// Called to trigger <see cref="Failed"/> event.
+        /// 触发 <see cref="Failed"/> 事件
         /// </summary>
-        /// <param name="exception">Exception that cause failure</param>
+        /// <param name="exception">异常信息</param>
         protected virtual void OnFailed(Exception exception)
         {
             Failed?.Invoke(this, exception);
         }
 
         /// <summary>
-        /// Called to trigger <see cref="Disposed"/> event.
+        /// 触发 <see cref="Disposed"/> 事件.
         /// </summary>
         protected virtual void OnDisposed()
         {
             Disposed?.Invoke(this, null);
         }
 
-        private void PreventMultipleBegin()
+        /// <summary>
+        /// 启动工作单元之前,校验工作单元是否被重复启动
+        /// </summary>
+        protected virtual void PreventMultipleBegin()
         {
             if (_isBeginCalledBefore)
             {
-                throw new Exception("This unit of work has started before. Can not call Start method more than once.");
+                throw new Exception($"工作单元{this.Id}已启动,不能重复启动!");
             }
 
             _isBeginCalledBefore = true;
         }
 
-        private void PreventMultipleComplete()
+        /// <summary>
+        /// 提交工作单元之前,校验工作单元是否已经被提交
+        /// </summary>
+        protected virtual void PreventMultipleComplete()
         {
             if (_isCompleteCalledBefore)
             {
-                throw new Exception("Complete is called before!");
+                throw new Exception($"工作单元{this.Id}已提交");
             }
 
             _isCompleteCalledBefore = true;

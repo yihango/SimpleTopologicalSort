@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -25,6 +25,11 @@ namespace EasyUnitOfWork.Uow.Handles
         }
 
         public void Dispose()
+        {
+            this.Dispose(true);
+        }
+
+        protected virtual void Dispose(bool state)
         {
             if (_isDisposed)
             {

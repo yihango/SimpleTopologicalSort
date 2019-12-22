@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -6,7 +6,7 @@ using System.Threading;
 namespace EasyUnitOfWork.Uow.Providers
 {
     /// <summary>
-    /// 
+    /// 异步本地锁工作单元提供者
     /// </summary>
     public class AsyncLocalCurrentUnitOfWorkProvider : ICurrentUnitOfWorkProvider
     {
