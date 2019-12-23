@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using TestConnection.Database;
 
 namespace TestConnection
 {
@@ -13,6 +14,7 @@ namespace TestConnection
     {
         public static void Main(string[] args)
         {
+            var tmp = typeof(AppDbContext).GetType().Assembly.Location;
             CreateHostBuilder(args).Build().Run();
         }
 

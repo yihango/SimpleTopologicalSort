@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using TestConnection.Database;
+using EasyUnitOfWork;
 
 namespace TestConnection
 {
@@ -26,10 +27,7 @@ namespace TestConnection
         {
             services.AddControllersWithViews();
 
-            services.AddDbContext<AppDbContext>(o =>
-            {
-
-            });
+            services.AddEasyUnitOfWorkEfCore();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -43,6 +41,22 @@ namespace TestConnection
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
+            // 注册数据库连接
+            app.ApplicationServices
+                .GetService<IDbContextRegister>()
+                .Register<AppDbContext>((options) =>
+            {
+                if (options.ExistingConnection != null)
+                {
+                    options.DbContextOptions.UseSqlite(options.ExistingConnection);
+                }
+                else
+                {
+                    options.DbContextOptions.UseSqlite(options.ConnectionString);
+                }
+            });
+
             app.UseStaticFiles();
 
             app.UseRouting();
