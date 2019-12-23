@@ -4,8 +4,6 @@ VisualStudioVersion = 16.0.29509.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleTopologicalSortDemo", "SimpleTopologicalSortDemo\SimpleTopologicalSortDemo.csproj", "{FB4BD6DF-C6AE-4328-8B07-0A971322CAC9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EfUnitOfWorkDemo", "EfUnitOfWorkDemo\EfUnitOfWorkDemo.csproj", "{63ACA58B-8FA6-42E4-8A70-726AB09259D9}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestConnection", "TestConnection\TestConnection.csproj", "{B1B49D64-E596-458B-8487-0BB2CC3DA4FF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyUnitOfWork", "EasyUnitOfWork\EasyUnitOfWork.csproj", "{2E989289-CE65-4163-B19A-4440807AD23F}"
@@ -22,10 +20,6 @@ Global
 		{FB4BD6DF-C6AE-4328-8B07-0A971322CAC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FB4BD6DF-C6AE-4328-8B07-0A971322CAC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FB4BD6DF-C6AE-4328-8B07-0A971322CAC9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{63ACA58B-8FA6-42E4-8A70-726AB09259D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{63ACA58B-8FA6-42E4-8A70-726AB09259D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{63ACA58B-8FA6-42E4-8A70-726AB09259D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{63ACA58B-8FA6-42E4-8A70-726AB09259D9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B1B49D64-E596-458B-8487-0BB2CC3DA4FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B1B49D64-E596-458B-8487-0BB2CC3DA4FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B1B49D64-E596-458B-8487-0BB2CC3DA4FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
