@@ -1,13 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Transactions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-
 using EasyUnitOfWork.Uow.Handles;
 using EasyUnitOfWork.Uow.Providers;
-using EasyUnitOfWork.Extensions;
-using System;
 
 namespace EasyUnitOfWork.Uow
 {
@@ -49,7 +47,7 @@ namespace EasyUnitOfWork.Uow
                 return new InnerUnitOfWorkCompleteHandle();
             }
 
-            var uow = _serviceProvider.Resolve<IUnitOfWork>();
+            var uow = _serviceProvider.GetService<IUnitOfWork>();
 
             uow.Completed += (sender, args) =>
             {
