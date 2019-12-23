@@ -19,6 +19,8 @@ namespace EasyUnitOfWork
 
             services.TryAddTransient<EfCoreUnitOfWork>();
 
+            services.AddEasyUnitOfWork();
+
             return services;
         }
     }
