@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace TestConnection.Migrations
 {
@@ -11,7 +11,7 @@ namespace TestConnection.Migrations
                 columns: table => new
                 {
                     BookId = table.Column<long>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     BookName = table.Column<string>(nullable: true),
                     Price = table.Column<decimal>(nullable: false)
                 },

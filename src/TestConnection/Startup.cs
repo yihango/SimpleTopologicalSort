@@ -10,6 +10,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using TestConnection.Database;
 using EasyUnitOfWork;
+using TestConnection.Repositories;
+using TestConnection.Filters;
 
 namespace TestConnection
 {
@@ -25,8 +27,13 @@ namespace TestConnection
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
+            services.AddControllersWithViews(options =>
+            {
+                options.Filters.Add<UowFilter>();
+            });
 
+            services.AddTransient<IBookRepository, BookRepository>();
+            services.AddTransient(typeof(UowFilter));
             services.AddEasyUnitOfWorkEfCore();
         }
 
@@ -49,11 +56,13 @@ namespace TestConnection
             {
                 if (options.ExistingConnection != null)
                 {
-                    options.DbContextOptions.UseSqlite(options.ExistingConnection);
+                    options.DbContextOptions.UseSqlServer(options.ExistingConnection);
                 }
                 else
                 {
-                    options.DbContextOptions.UseSqlite(options.ConnectionString);
+                    var connectionString = this.Configuration["ConnectionStrings:Default"];
+
+                    options.DbContextOptions.UseSqlServer(connectionString);
                 }
             });
 

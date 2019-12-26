@@ -24,7 +24,7 @@ namespace TestConnection.Database
 
             var connectionString = configuration["ConnectionStrings:Default"];
 
-            builder.UseSqlite(connectionString);
+            builder.UseSqlServer(connectionString);
 
             return new AppDbContext(builder.Options);
         }
