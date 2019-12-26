@@ -17,7 +17,7 @@ namespace EasyUnitOfWork
 
             services.TryAddTransient<IEfCoreTransactionStrategy, DbContextEfCoreTransactionStrategy>();
 
-            services.TryAddTransient<EfCoreUnitOfWork>();
+            services.TryAddTransient<IUnitOfWork, EfCoreUnitOfWork>();
 
             services.AddEasyUnitOfWork();
 

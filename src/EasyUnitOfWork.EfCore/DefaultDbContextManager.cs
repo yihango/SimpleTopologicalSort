@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Reflection;
 using System.Text;
+using System.Linq;
 
 namespace EasyUnitOfWork
 {
@@ -32,7 +33,9 @@ namespace EasyUnitOfWork
 
             _dbContextConfigurationDict[dbContextType.FullName]?.Invoke(dbContextConfiguration);
 
-            var obj = dbContextType.TypeInitializer.Invoke(new object[] {
+            // TODO: 实例化数据库上下文
+            var constructors = dbContextType.GetConstructors();
+            var obj = constructors[0].Invoke(new object[] {
                 dbContextConfiguration.DbContextOptions.Options
             });
 

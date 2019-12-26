@@ -21,7 +21,7 @@ namespace EasyUnitOfWork.Extensions
                 throw new ArgumentException("unitOfWork is not type of " + typeof(EfCoreUnitOfWork).FullName, "unitOfWork");
             }
 
-            return (unitOfWork as EfCoreUnitOfWork).GetOrCreateDbContext<TDbContext>(multiTenancySide, name);
+            return (unitOfWork as EfCoreUnitOfWork).GetOrCreateDbContext<TDbContext>(name);
         }
     }
 }

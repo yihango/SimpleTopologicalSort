@@ -84,6 +84,13 @@ namespace EasyUnitOfWork.Uow
             return (TDbContext)dbContext;
         }
 
+        protected override void BeginUow()
+        {
+            if (Options.IsTransactional == true)
+            {
+                _transactionStrategy.InitOptions(Options);
+            }
+        }
 
         public override void SaveChanges()
         {
